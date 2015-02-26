@@ -38,10 +38,20 @@ public class backend{
 		};
 		t2.start();
 		System.out.println("here2");
-		while(true){
-			
-		}
 		
+		Thread t3 = new Thread(){
+			public void run(){
+				try {
+					friendSocket fs = new friendSocket();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		t3.start();
+		System.out.println("here3");
+	
 	}
 	
 	public backend(){

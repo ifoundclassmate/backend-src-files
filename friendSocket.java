@@ -4,13 +4,15 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-class loginSocket{
+class friendSocket{
 	
-	public loginSocket() throws IOException{
+	public friendSocket() throws IOException{
 		String userid;
+		String friendname;
 		String username;
 		String password;
-		ServerSocket welcomeSocket = new ServerSocket(3455);
+		String command;
+		ServerSocket welcomeSocket = new ServerSocket(3454);
 		String returnSentence = "";
 		System.out.println("waiting for connection");
 		while(true){
@@ -19,30 +21,30 @@ class loginSocket{
 					connectionSocket.getInputStream()));
 			System.out.println("connection established");
 			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-			userid = inFromClient.readLine();
+			command = inFromClient.readLine();
 			username = inFromClient.readLine();
 			password = inFromClient.readLine();
-			System.out.println("userid: " + userid);
+			friendname = inFromClient.readLine();
+
+			System.out.println("command: " + command);
 			System.out.println("username: " + username);
-			System.out.println("password: " + password);
+			System.out.println("friendname: " + friendname);
+
 			
 			login l = new login(username,password);
-			int ret = l.authenticate();
-			System.out.println("ret: " + ret);
-			returnSentence += Integer.toString(ret) + '\n';
+			int retv = 0;
+			//int ret = l.authenticate();
+			//System.out.println("ret: " + ret);
+			//returnSentence += Integer.toString(ret) + '\n';
 			
-			if(ret == 1){
-				System.out.println("useridInSocket: " + l.getUserId());
-				returnSentence += Integer.toString(l.getUserId()) + '\n';
-				l.setupFriend();
-				ArrayList<String> fids;
-				returnSentence += "fids\n" ;
-				fids = l.getFriend();
-				//send friend list when user login
-				for(int i = 0; i < fids.size(); i++){
-					returnSentence += fids.get(i) + '\n';
-				}
+			if(command.equals("af")){
+				retv = l.addFriend(friendname);
+				returnSentence = Integer.toString(retv) + '\n';
+			}else if(command.equals("rf")){
+				retv = l.removeFriend(friendname);
+				returnSentence = Integer.toString(retv) + '\n';
 			}
+			
 			outToClient.writeBytes(returnSentence);
 			returnSentence = "";
 		}

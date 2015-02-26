@@ -21,6 +21,7 @@ public class login{
 			this.username = u;
 			this.password = p;
 			this.allocateUserId();
+			this.setupFriend();
 		}
 	}
 	
@@ -71,6 +72,7 @@ public class login{
 			while (rs.next()){
 				id  = Integer.parseInt(rs.getString("userid"));
 				usern = rs.getString("username");
+				usern = usern.replaceAll(" ","");
 				System.out.println("userid = " + id);
 				System.out.println("username = " + usern);
 				records.add(new pair(usern,id));
@@ -92,8 +94,87 @@ public class login{
 		
 	}
 	
-	private void addFriend(login user){
-		this.friendList.add(Integer.toString(user.getUserId()));
+	// -1 means already friend
+	// 0 means add friend
+	// 1 means success
+	
+	public int addFriend(String fn){
+		String fid = "-1";
+		for(int i = 0; i < records.size(); i++){
+			if(records.get(i).getName().equals(fn)){
+				fid = Integer.toString(records.get(i).getId());
+				break;
+			}
+		}
+		if( fid == "-1") return -1;
+		System.out.println("fid: " + fid );
+		if(this.friendList.contains(fid)) return -1;
+		this.friendList.add(fid);
+		Connection c = null;
+		Statement stmt = null;
+		try{
+			System.out.println("add a friend");
+			System.out.println(this.userid);
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
+			c.setAutoCommit(false);
+			stmt = c.createStatement();
+			String sql = "INSERT INTO FRIEND (MYID,FRIENDID) "+
+					"VALUES (" + this.userid  + ", " + fid + " );" ;
+			stmt.executeUpdate(sql);
+			
+			stmt.close();
+			c.commit();
+			c.close();
+		} catch (Exception e ){
+			System.out.println(e.getClass().getName() + e.getMessage() );
+			this.friendList.remove(fid);
+			return 0;
+		}
+		return 1;
+		
+	}
+	
+		// -1 means no friend
+		// 0 means fail remove friend
+		// 1 means success
+		
+	public int removeFriend(String fn){
+		
+		String fid = "-1";
+		for(int i = 0; i < records.size(); i++){
+			if(records.get(i).getName().equals(fn)){
+				fid = Integer.toString(records.get(i).getId());
+				break;
+			}
+		}
+		if( fid == "-1") return -1;
+		
+		if(!this.friendList.contains(fid)) return -1;
+		this.friendList.remove(fid);
+		Connection c = null;
+		Statement stmt = null;	
+		try{
+			System.out.println("removing a friend");
+			System.out.println(this.userid);
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
+			c.setAutoCommit(false);
+			stmt = c.createStatement();
+			String sql = "DELETE FROM FRIEND WHERE MYID = " + this.userid + 
+					"AND FRIENDID = " + fid + " ;";
+			stmt.executeUpdate(sql);
+				
+			stmt.close();
+			c.commit();
+			c.close();
+		} catch (Exception e ){
+			System.out.println(e.getClass().getName() + e.getMessage() );
+			this.friendList.add(fid);
+			return 0;
+		}
+		return 1;
+			
 	}
 	
 	public ArrayList<String> getFriend(){

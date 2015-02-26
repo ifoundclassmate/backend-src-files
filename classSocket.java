@@ -23,10 +23,15 @@ class classSocket{
 	public classSocket() throws IOException{
 		String command;
 		String userid;
-		String courseid;
+		String courseid = "";
+		String section = "";
+		String subject = "";
+		String catalog = "";
+		String sectionType = "";
 		ServerSocket welcomeSocket = new ServerSocket(3456);
 		String returnSentence = "";
 		System.out.println("class waiting for connection");
+		int retv = 0;
 		while(true){
 			Socket connectionSocket = welcomeSocket.accept();
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(
@@ -35,30 +40,90 @@ class classSocket{
 			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 			command = inFromClient.readLine();
 			userid = inFromClient.readLine();
-			courseid = inFromClient.readLine();
-			System.out.println("command: " + userid);
-			System.out.println("courseid: " + courseid);
+			
+			System.out.println("command: " + command);
 			System.out.println("userid: " + userid);
-			course c = new course(Integer.parseInt(userid), courseid, "dc", "dc");
-			if(command == "ac"){
-				c.addClass();
-			}else if(command  == "dc"){
-				c.removeClass();
-			}else if(command == "rmc"){
+			
+			
+			if(command.equals("ac")){
+				System.out.println("adding a course");
+				String temp = inFromClient.readLine();
+				subject = temp.split(" ")[0];
+				catalog = temp.split(" ")[1];
+				temp  = inFromClient.readLine();
+				sectionType = temp.split(" ")[0];
+				section = temp.split(" ")[1];
+				course c = new course(Integer.parseInt(userid), subject,catalog,
+						section,sectionType);
+
+				System.out.println("subject name: " + subject);
+				System.out.println("catalog name: " + catalog);
+				System.out.println("section: " + section);
+				System.out.println("section type : " + sectionType);
+				retv = c.addClass();
+				returnSentence = Integer.toString(retv) + '\n';
+			}else if(command.equals("dc")){
+				System.out.println("removing a course");
+				String temp = inFromClient.readLine();
+				subject = temp.split(" ")[0];
+				catalog = temp.split(" ")[1];
+				temp  = inFromClient.readLine();
+				sectionType = temp.split(" ")[0];
+				section = temp.split(" ")[1];
+				course c = new course(Integer.parseInt(userid), subject,catalog,
+						section,sectionType);
+
+				System.out.println("subject name: " + subject);
+				System.out.println("catalog name: " + catalog);
+				System.out.println("section: " + section);
+				System.out.println("section type : " + sectionType);
+				retv = c.removeClass();
+				returnSentence = Integer.toString(retv) + '\n';
+			}else if(command.equals("rmc")){
+				System.out.println("retrieve courses");
 				ArrayList<String> cids;
+				course c = new course(Integer.parseInt(userid), courseid, "dc", "dc",
+						section);
 				cids = c.retriveClass(Integer.parseInt(userid));
+				if(cids.size() == 1) returnSentence = "0\n";
+				else returnSentence = "1\n";
+				returnSentence += Integer.toString(cids.size()/3) + '\n';
 				for(int i = 0; i < cids.size(); i++){
-					returnSentence += cids.get(i);
+					returnSentence += cids.get(i) + '\n';
 				}
-			}else if(command == "rfc"){
+				returnSentence += "end\n";
+			}else if(command.equals("rfc")){
 				String friendid = inFromClient.readLine();
 				ArrayList<String> cids;
+				course c = new course(Integer.parseInt(userid), courseid, "dc", "dc",
+						section);
 				cids = c.retriveClass(Integer.parseInt(friendid));
+				if(cids.size() == 1) returnSentence = "0\n";
+				else returnSentence = "1\n";
+				returnSentence += Integer.toString(cids.size()/3) + '\n';
 				for(int i = 0; i < cids.size(); i++){
-					returnSentence += cids.get(i);
+					returnSentence += cids.get(i) + '\n';
 				}
+				returnSentence += "end\n";
+			}else if(command.equals("cfsc")){
+				
+				//check for same courses between two friends.
+				String friendid = inFromClient.readLine();
+				course c = new course(Integer.parseInt(userid), courseid, "dc", "dc",
+						section);
+				ArrayList<String> ret;
+				ret = c.checkSameCourses(Integer.parseInt(userid),
+											Integer.parseInt(friendid));
+				if(ret.size() == 1) returnSentence = "0\n";
+				else returnSentence = "1\n";
+				returnSentence += Integer.toString(ret.size()/3) + '\n';
+				for(int i = 0; i < ret.size(); i++){
+					returnSentence += ret.get(i) + '\n';
+				}
+				returnSentence += "end\n";
 			}
 			outToClient.writeBytes(returnSentence);
+			returnSentence = "";
 		}
 			
 	}

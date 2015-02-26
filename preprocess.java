@@ -15,7 +15,7 @@ import org.json.JSONObject;
 class preprocess{
 	
 	public preprocess(){
-		courseSetup();
+	//	courseSetup();
 		userSetup();
 	}
 	
@@ -24,6 +24,7 @@ class preprocess{
 	private void userSetup(){
 		login l = new login("","");
 		l.setupRecords();
+		//l.setupFriend();
 	}
 	
 	private void courseSetup(){
@@ -37,7 +38,7 @@ class preprocess{
     	String courseName;
     	String subject;
     	String catalog_number;
-    	course c = new course(-1,"", "", "");
+    	course c = new course(-1,"", "", "","");
     	
     	try{
             url = new URL("https://api.uwaterloo.ca/v2/courses/cs.json?key=d580b4f96aa6be2d53e8eb2aeb576c8e");
@@ -56,6 +57,7 @@ class preprocess{
             //	System.out.println(str);
                    // Object obj = parser.parse(reply);
                     JSONObject obj = new JSONObject(str);
+                    
                     
                     for(int i = 0; i < obj.getJSONArray("data").length(); i++){
                     
