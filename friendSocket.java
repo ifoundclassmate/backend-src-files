@@ -31,7 +31,7 @@ class friendSocket{
 			System.out.println("friendname: " + friendname);
 
 			
-			login l = new login(username,password);
+			login l = new login("login",username,"",password);
 			int retv = 0;
 			//int ret = l.authenticate();
 			//System.out.println("ret: " + ret);

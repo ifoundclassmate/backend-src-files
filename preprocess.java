@@ -22,7 +22,7 @@ class preprocess{
 	
 	
 	private void userSetup(){
-		login l = new login("","");
+		login l = new login("","","","");
 		l.setupRecords();
 		//l.setupFriend();
 	}

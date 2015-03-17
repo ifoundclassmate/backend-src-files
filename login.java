@@ -11,17 +11,26 @@ public class login{
 	private String username;
 	private int userid;
 	private String password;
+	private String email;
 	private static int currentId = 1;
 	private ArrayList<String> friendList = new ArrayList<String>();
 	private static ArrayList<pair> records = new ArrayList<pair>();
 	
 		
-	public login(String u, String p){
-		if(!u.equals("")){
-			this.username = u;
-			this.password = p;
-			this.allocateUserId();
+	public login(String command,String u, String e, String p){
+		
+		this.username = u;
+		this.password = p;
+		this.email = e;
+		
+		if(command.equals("login")){
+			this.checkUserExist();
 			this.setupFriend();
+		}else if(command.equals("ac")){
+			if(!this.checkUserExist()){
+				this.allocateUserId();
+				this.setupFriend();
+			}
 		}
 	}
 	
@@ -57,6 +66,7 @@ public class login{
 	
 	
 	public void setupRecords(){
+		
 		Connection c = null;
 		Statement stmt = null;
 		String usern;
@@ -69,6 +79,7 @@ public class login{
 			
 			stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM USERS" + ";");
+			if(rs != null) currentId++;
 			while (rs.next()){
 				id  = Integer.parseInt(rs.getString("userid"));
 				usern = rs.getString("username");
@@ -76,6 +87,7 @@ public class login{
 				System.out.println("userid = " + id);
 				System.out.println("username = " + usern);
 				records.add(new pair(usern,id));
+				System.out.println("currentId = " + currentId);
 				currentId++;
 			}
 			rs.close();
@@ -237,14 +249,20 @@ public class login{
 		return this.username;
 	}
 	
-	private void allocateUserId(){
+	public boolean checkUserExist(){
+		
 		for(pair p: records){
 			if(p.getName().equals(this.username)){
 				//match found, return id;
 				this.userid = p.getId();
-				return;
+				return true;
 			}
 		}
+		return false;
+	}
+	
+	private void allocateUserId(){
+		
 		
 		//no match, need to allocate new id and insert to database
 		records.add(new pair(this.username,currentId));
@@ -259,9 +277,9 @@ public class login{
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
 			c.setAutoCommit(false);
 			stmt = c.createStatement();
-			String sql = "INSERT INTO USERS (USERID,USERNAME,PASSWORD) "+
+			String sql = "INSERT INTO USERS (USERID,USERNAME,EMAIL,PASSWORD) "+
 					"VALUES (" + this.userid  + ", " + "'" +this.username + "'"
-					+" , " + "'" +this.password + "' " + ");" ;
+					+" , " + "'" + this.email + "'" +" , " + "'" +this.password + "' " + ");" ;
 			stmt.executeUpdate(sql);
 			
 			stmt.close();
