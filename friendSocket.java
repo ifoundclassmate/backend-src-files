@@ -43,7 +43,17 @@ class friendSocket{
 			}else if(command.equals("rf")){
 				retv = l.removeFriend(friendname);
 				returnSentence = Integer.toString(retv) + '\n';
+			}else if(command.equals("rmf")){
+				ArrayList<String> fids;
+				fids = l.getFriend();
+				returnSentence += fids.size() + "\n" ;
+				//send friend list when user login
+				for(int i = 0; i < fids.size(); i++){
+					returnSentence += fids.get(i) + '\n';
+				}
 			}
+			
+			
 			
 			outToClient.writeBytes(returnSentence);
 			returnSentence = "";

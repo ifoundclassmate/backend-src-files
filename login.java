@@ -34,6 +34,16 @@ public class login{
 		}
 	}
 	
+	public String getUsername(int use){
+		for(int i = 0; i < records.size();i++){
+			if(records.get(i).getId() == use){
+				return records.get(i).getName();
+			}
+		}
+		return "";
+		
+	}
+	
 	public void setupFriend(){
 		Connection c = null;
 		Statement stmt = null;
@@ -64,6 +74,17 @@ public class login{
 		}
 	}
 	
+	
+	public int findUserId(String username){
+		for(pair p: records){
+			if(p.getName().equals(this.username)){
+				//match found, return id;
+				return p.getId();
+			}
+		}
+		return -1;
+		
+	}
 	
 	public void setupRecords(){
 		
@@ -106,6 +127,8 @@ public class login{
 		
 	}
 	
+	
+	
 	// -1 means already friend
 	// 0 means add friend
 	// 1 means success
@@ -122,27 +145,7 @@ public class login{
 		System.out.println("fid: " + fid );
 		if(this.friendList.contains(fid)) return -1;
 		this.friendList.add(fid);
-		Connection c = null;
-		Statement stmt = null;
-		try{
-			System.out.println("add a friend");
-			System.out.println(this.userid);
-			Class.forName("org.postgresql.Driver");
-			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
-			c.setAutoCommit(false);
-			stmt = c.createStatement();
-			String sql = "INSERT INTO FRIEND (MYID,FRIENDID) "+
-					"VALUES (" + this.userid  + ", " + fid + " );" ;
-			stmt.executeUpdate(sql);
-			
-			stmt.close();
-			c.commit();
-			c.close();
-		} catch (Exception e ){
-			System.out.println(e.getClass().getName() + e.getMessage() );
-			this.friendList.remove(fid);
-			return 0;
-		}
+		
 		return 1;
 		
 	}

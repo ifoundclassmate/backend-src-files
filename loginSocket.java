@@ -43,13 +43,7 @@ class loginSocket{
 				if(ret == 1){
 					System.out.println("useridInSocket: " + l.getUserId());
 					returnSentence += Integer.toString(l.getUserId()) + '\n';
-					ArrayList<String> fids;
-					returnSentence += "fids\n" ;
-					fids = l.getFriend();
-					//send friend list when user login
-					for(int i = 0; i < fids.size(); i++){
-						returnSentence += fids.get(i) + '\n';
-					}
+					
 				}
 				outToClient.writeBytes(returnSentence);
 				

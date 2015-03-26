@@ -93,6 +93,77 @@ public class course{
 		return sameCourses;
 	}
 	
+	public ArrayList<String> retreiveFriendsByCourse(){
+		
+		ArrayList<String> courseList = new ArrayList<String>();
+		Connection c = null;
+		Statement stmt = null;
+		int id;
+		String ci;
+	//	String cn;
+//		String l;
+//		String te;
+		String sb;
+		String cata;
+		String sec;
+		String st;
+		String un;
+		
+	//	boolean duplicate = false;
+		try{
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
+			c.setAutoCommit(false);
+			System.out.println("Opened database successsfully");
+			
+			stmt = c.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT USERID FROM COURSE "
+					+ "WHERE SUBJECT = " +  "'" + this.subject + "'" +" AND "
+					+ "CATALOG = " + "'" + this.catalog_number + "'" +" AND "
+					+ "SECTION = " + "'" + this.section + "'" + " AND " 
+					+ "TYPESEC = " + "'" + this.secType + "'" + " AND "
+					+ "USERID != " + "'" + this.userid + "'" +  " ;");
+			while (rs.next()){
+				id = rs.getInt("userid");
+				login l = new login("","","","");
+				un = l.getUsername(id);
+				
+		//		ci = rs.getString("courseid");
+		//		cn = rs.getString("coursename");
+		//		l = rs.getString("location");
+		//		te = rs.getString("term");
+		//		sec = rs.getInt("sec");
+		//		sb = rs.getString("subject");
+		//		cata = rs.getString("catalog");
+		//		sec = rs.getString("section");
+		//		st = rs.getString("typesec");
+//				System.out.println("courseid = " + ci);
+			//	course temp = new course(id,ci,sb,cata);
+		//		sb = sb.replaceAll(" ", "");
+		//		String combined = st + " " + sec ;
+				courseList.add(un);
+		//		courseList.add(cata);
+//				courseList.add(sec);
+		//		courseList.add(combined);
+				//courseList.add(st);
+				//courseList.add(sec);
+				
+				
+			}
+			rs.close();
+			stmt.close();
+			c.close();
+		} catch (Exception e ){
+			System.out.println(e.getClass().getName() + e.getMessage() );
+			courseList.clear();
+			courseList.add("-1");
+			return (courseList);
+		}
+		
+		return (courseList);
+		
+	}
+	
 	
 public String findCourseId(String sb, String cata){
 		

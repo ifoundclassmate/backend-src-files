@@ -114,13 +114,42 @@ class classSocket{
 				ArrayList<String> ret;
 				ret = c.checkSameCourses(Integer.parseInt(userid),
 											Integer.parseInt(friendid));
-				if(ret.size() == 1) returnSentence = "0\n";
-				else returnSentence = "1\n";
-				returnSentence += Integer.toString(ret.size()/3) + '\n';
-				for(int i = 0; i < ret.size(); i++){
-					returnSentence += ret.get(i) + '\n';
+				if(ret.size() == 1){
+					returnSentence = "0\n";
+				}else{
+					returnSentence = "1\n";
+				
+					returnSentence += Integer.toString(ret.size()/3) + '\n';
+					for(int i = 0; i < ret.size(); i++){
+						returnSentence += ret.get(i) + '\n';
+					}
 				}
 				returnSentence += "end\n";
+			}else if(command.equals("rubc")){
+				System.out.println("retreiving friendid by course");
+				String temp = inFromClient.readLine();
+				subject = temp.split(" ")[0];
+				catalog = temp.split(" ")[1];
+				temp  = inFromClient.readLine();
+				sectionType = temp.split(" ")[0];
+				section = temp.split(" ")[1];
+				course c = new course(Integer.parseInt(userid), subject,catalog,
+						section,sectionType);
+				ArrayList<String> ret;
+				ret = c.retreiveFriendsByCourse();
+				if(ret.size() == 1 && ret.get(0).equals("-1")){
+					returnSentence = "0\n";
+					
+				}else{
+					returnSentence = "1\n";
+					returnSentence += Integer.toString(ret.size()) + '\n';
+					for(int i = 0; i < ret.size(); i++){
+						returnSentence += ret.get(i) + '\n';
+					}
+						
+				}
+				returnSentence += "end\n";
+				
 			}
 			outToClient.writeBytes(returnSentence);
 			returnSentence = "";

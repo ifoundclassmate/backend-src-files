@@ -24,6 +24,10 @@ class preprocess{
 	private void userSetup(){
 		login l = new login("","","","");
 		l.setupRecords();
+		group g = new group("","","");
+		g.setupRecords();
+		meeting m = new meeting("",-1,-1,-1,-1,-1);
+		m.setupRecords();
 		//l.setupFriend();
 	}
 	

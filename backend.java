@@ -51,6 +51,18 @@ public class backend{
 		};
 		t3.start();
 		System.out.println("here3");
+		
+		Thread t4 = new Thread(){
+			public void run(){
+				try{
+					groupSocket gs = new groupSocket();
+				}catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		t4.start();
 	
 	}
 	
