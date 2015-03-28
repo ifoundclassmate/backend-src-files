@@ -34,10 +34,13 @@ class groupSocket{
 				groupname = inFromClient.readLine();
 				description = inFromClient.readLine();
 				group g = new group("",groupname,description);
-				System.out.println("username: " + groupname);
-				System.out.println("friendname: " + description);
+				System.out.println("groupname: " + groupname);
+				System.out.println("description: " + description);
 				boolean tempRetv = g.checkGroupExist();
-				if(tempRetv) g.allocateGroupId();
+				if(!tempRetv) {
+					g.allocateGroupId();
+					retv = 1;
+				}
 				returnSentence = Integer.toString(retv) + '\n';
 			}else if(command.equals("autg")){
 				groupname = inFromClient.readLine();
@@ -51,7 +54,7 @@ class groupSocket{
 					continue;
 				}
 				retv = g.addUserToGroup(username, groupname);
-				returnSentence = Integer.toString(retv) + '\n';
+				returnSentence = Integer.toString(1) + '\n';
 			}else if(command.equals("rmg")){
 				username  = inFromClient.readLine();
 				login templ = new login("",username,"","");
@@ -61,13 +64,15 @@ class groupSocket{
 					returnSentence = "";
 					continue;
 				}
+				int userid = templ.getUserId();
 				group g = new group("","","");
-				ArrayList<String> retv2 = g.retreiveGroup(username);
-				returnSentence += retv2.size()/2 + '\n';
-				for(int i = 0; i < retv2.size(); i+=2){
+				returnSentence += "1\n";
+				ArrayList<String> retv2 = g.retreiveGroup(userid);
+				returnSentence += Integer.toString(retv2.size()/2) + '\n';
+				for(int i = 0; i < retv2.size(); i++){
 					returnSentence += retv2.get(i) + '\n';
-					returnSentence += retv2.get(i+1) + '\n';
 				}
+				returnSentence += "end\n";
 				
 			}else if(command.equals("am")){
 				groupname = inFromClient.readLine();
@@ -80,12 +85,14 @@ class groupSocket{
 						Integer.parseInt(month),Integer.parseInt(date),
 						Integer.parseInt(hour)
 						,Integer.parseInt(min));
-				if(!m.checkMeetingExist()){
+				if(m.checkMeetingExist()){
 					returnSentence = Integer.toString(retv) + '\n';
 					outToClient.writeBytes(returnSentence);
 					returnSentence = "";
 					continue;
 				}
+				m.allocateMeetingId();
+				
 				returnSentence = "1\n";
 				
 			}else if(command.equals("rmm")){

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import backend.group.pair;
 
 public class meeting{
-	private int meetingId = -1;
+	private int meetingId = 1;
 	private int month;
 	private int date;
 	private int hour;
@@ -32,6 +32,7 @@ public class meeting{
 		if(groupname != ""){
 			if(tempGroup.getGroupId() != -1){
 				this.groupid = tempGroup.getGroupId();
+				System.out.println("groupid :" + this.groupid);
 
 			}
 		}
@@ -99,6 +100,7 @@ public class meeting{
 		Statement stmt = null;
 		int gi;
 		String gn;
+		int mi;
 		int id = 0;
 		try{
 			Class.forName("org.postgresql.Driver");
@@ -111,9 +113,9 @@ public class meeting{
 			if(rs != null) currentId++;
 			while (rs.next()){
 				gi = rs.getInt("groupid");
-				gn = rs.getString("meetingid");
+				mi = rs.getInt("meetingid");
 				
-				records.add(new pair(groupid,meetingId));
+				records.add(new pair(gi,mi));
 				currentId++;
 			}
 			rs.close();
@@ -125,8 +127,12 @@ public class meeting{
 	}
 	
 	public boolean checkMeetingExist(){
-		
+	//	System.out.println(this.groupname);
 		for(pair p: records){
+		//	System.out.println("meeting group id: " + p.getGroupId());
+		//	group tempg = new group("",this.groupname,"");
+		//	if(!tempg.checkGroupExist()) return false;
+		//	System.out.println(tempg.getGroupId());
 			if(p.getGroupId() == this.groupid){
 				//match found, return id;
 				this.meetingId = p.getMeetingId();
@@ -136,26 +142,26 @@ public class meeting{
 		return false;
 	}
 	
-	public void allocateGroupId(){
+	public void allocateMeetingId(){
 		
 		
 		//no match, need to allocate new id and insert to database
 		records.add(new pair(groupid,currentId));
-		this.groupid = currentId;
+		this.meetingId = currentId;
 		currentId++;
 		Connection c = null;
 		Statement stmt = null;
 		try{
-			System.out.println("group setup");
+			System.out.println("meeting setup");
 			System.out.println(this.groupid);
 			Class.forName("org.postgresql.Driver");
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
 			c.setAutoCommit(false);
 			stmt = c.createStatement();
 			String sql = "INSERT INTO MEETING (MEETINGID,GROUPID,YEAR,MONTH,DATE,HOUR,MIN) "+
-					"VALUES (" + this.meetingId  + ", " + "'" +this.groupid + "'"
-					+" , " + "'" + this.year + "' " + "'" + this.month + "' " +
-					"'" + this.date + "' " +  "'" + this.hour + "' " + "'" + 
+					"VALUES (" + "'" + this.meetingId + "'" + ", " + "'" +this.groupid + "'"
+					+" , " + "'" + this.year + "' "+" , " + "'" + this.month + "' " +" , " +
+					"'" + this.date + "' " +" , " +  "'" + this.hour + "' " +" , " + "'" + 
 					this.min + "' " + ");" ;
 			stmt.executeUpdate(sql);
 			

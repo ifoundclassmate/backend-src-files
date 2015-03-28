@@ -28,14 +28,41 @@ public class group{
 	}
 	
 	
-	public ArrayList<String> retreiveGroup(String username){
+	public ArrayList<String> retreiveGroup(int userid){
 		ArrayList<String> retv = new ArrayList<String>();
+		ArrayList<Integer> groupids = new ArrayList<Integer>();
 		Connection c = null;
 		Statement stmt = null;
 
 		String gn;
 		String description;
 		int id = 0;
+		int groupid;
+		
+		try{
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
+			c.setAutoCommit(false);
+			System.out.println("Opened database successsfully");
+			
+			stmt = c.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM GROUPMEMBER" + ";");
+			while (rs.next()){
+				groupid = rs.getInt("groupid");
+				id = rs.getInt("userid");
+				if(id == userid){
+					groupids.add(groupid);
+				}
+			}
+			rs.close();
+			stmt.close();
+			c.close();
+		} catch (Exception e ){
+			System.out.println(e.getClass().getName() + e.getMessage() );
+		}
+		
+		
+		
 		try{
 			Class.forName("org.postgresql.Driver");
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ifoundclassmate");
@@ -45,14 +72,17 @@ public class group{
 			stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM GROUPS" + ";");
 			while (rs.next()){
-				gn = rs.getString("groupname");
-				gn = gn.replaceAll(" ","");
-				gn = gn.replaceAll("_", " ");
-				description = rs.getString("description");
-				description = description.replaceAll(" ","");
-				description = description.replaceAll("_", " ");
-				retv.add(gn);
-				retv.add(description);
+				id = rs.getInt("groupid");
+				if(groupids.contains(id)){
+					gn = rs.getString("groupname");
+					gn = gn.replaceAll(" ","");
+					gn = gn.replaceAll("_", " ");
+					description = rs.getString("description");
+					description = description.replaceAll(" ","");
+					description = description.replaceAll("_", " ");
+					retv.add(gn);
+					retv.add(description);
+				}
 			}
 			rs.close();
 			stmt.close();
@@ -135,8 +165,11 @@ public class group{
 			while (rs.next()){
 				gi = rs.getInt("groupid");
 				gn = rs.getString("groupname");
+				gn = gn.replaceAll(" ", "");
+//				gn = gn.replaceAll("_", " ");
+				System.out.println("groupname: "+ gn);
 				
-				records.add(new pair(groupname,groupid));
+				records.add(new pair(gn,gi));
 				currentId++;
 			}
 			rs.close();
@@ -150,6 +183,7 @@ public class group{
 	public boolean checkGroupExist(){
 		
 		for(pair p: records){
+			System.out.println("groupname: "+ p.getName());
 			if(p.getName().equals(this.groupname)){
 				//match found, return id;
 				this.groupid = p.getId();
