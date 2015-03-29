@@ -100,11 +100,11 @@ class groupSocket{
 				meeting m = new meeting(groupname,-1,-1,-1,-1,-1);
 		
 				ArrayList<String> retv2 = m.retreiveMeeting(groupname);
-				returnSentence += retv2.size()/7 + '\n';
+				returnSentence += Integer.toString(retv2.size()/7) + '\n';
 				for(int i = 0; i < retv2.size(); i++){
 					returnSentence += retv2.get(i) + '\n';
 				}
-				
+				returnSentence += "end\n";
 			}else if(command.equals("rg")){
 
 				
