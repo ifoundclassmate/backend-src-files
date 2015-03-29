@@ -31,6 +31,7 @@ class groupSocket{
 			//returnSentence += Integer.toString(ret) + '\n';
 			
 			if(command.equals("cg")){
+				//create group
 				groupname = inFromClient.readLine();
 				description = inFromClient.readLine();
 				group g = new group("",groupname,description);
@@ -43,6 +44,7 @@ class groupSocket{
 				}
 				returnSentence = Integer.toString(retv) + '\n';
 			}else if(command.equals("autg")){
+				//add user to a group
 				groupname = inFromClient.readLine();
 				username  = inFromClient.readLine();
 				group g = new group("",groupname,"");
@@ -56,6 +58,7 @@ class groupSocket{
 				retv = g.addUserToGroup(username, groupname);
 				returnSentence = Integer.toString(1) + '\n';
 			}else if(command.equals("rmg")){
+				//retrieve my groups
 				username  = inFromClient.readLine();
 				login templ = new login("",username,"","");
 				if(!templ.checkUserExist()){
@@ -75,6 +78,7 @@ class groupSocket{
 				returnSentence += "end\n";
 				
 			}else if(command.equals("am")){
+				//add meeting
 				groupname = inFromClient.readLine();
 				String year = inFromClient.readLine();
 				String month = inFromClient.readLine();
@@ -96,6 +100,7 @@ class groupSocket{
 				returnSentence = "1\n";
 				
 			}else if(command.equals("rmm")){
+				//retrieve my meetings
 				groupname = inFromClient.readLine();
 				meeting m = new meeting(groupname,-1,-1,-1,-1,-1);
 		
